@@ -1,0 +1,36 @@
+name: Scrape Floor Sheet Data
+
+on:
+  schedule:
+    - cron: "15 23 * * *"  # Runs at 11:15 PM UTC (5:00 AM NST)
+  workflow_dispatch:  # Allows manual execution
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          sudo apt-get update && sudo apt-get install -y chromium-chromedriver
+          echo 'CHROMIUM_BINARY_PATH="/usr/bin/chromium-browser"' >> $GITHUB_ENV
+
+      - name: Run Web Scraper
+        run: python scraper.py
+
+      - name: Commit and Push Data
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add floorsheet_data.csv
+          git commit -m "Updated floor sheet data"
+          git push
