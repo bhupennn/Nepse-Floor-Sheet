@@ -1,6 +1,9 @@
 name: Scrape Floor Sheet Data
 
 on:
+  push:  # Runs when code is pushed or updated
+    branches:
+      - main  # Change to your default branch if not 'main'
   schedule:
     - cron: "15 23 * * *"  # Runs at 11:15 PM UTC (5:00 AM NST)
   workflow_dispatch:  # Allows manual execution
@@ -32,5 +35,5 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git add floorsheet_data.csv
-          git commit -m "Updated floor sheet data"
+          git commit -m "Updated floor sheet data" || echo "No changes to commit"
           git push
